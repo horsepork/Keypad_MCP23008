@@ -9,8 +9,8 @@
 #define NUM_COLS 4
 
 // may need to change depending on keypad pin layout
-const uint8_t* rowPins = {0, 1, 2};
-const uint8_t* colPins = {3, 4, 5, 6};
+const uint8_t rowPins[] = {0, 1, 2};
+const uint8_t colPins[] = {3, 4, 5, 6};
 
 // can use I2C0 or I2C1 (each have different pin options, check Pico pinout)
 // If I2C0, use Wire. If I2C1, use Wire1
@@ -21,14 +21,14 @@ void setup(){
     Wire.setSDA(I2C0_SDA_PIN);
     Wire.setSCL(I2C0_SCL_PIN);
     keypad.begin();
-    keypad.setUpdateDelay(20); // optional, change time between updates. Defaults to 10ms
-    keypad.setDebounceCounter(3); // optional. Increase if experiencing weird behavior. Defaults to 1
+    keypad.setReadDelay(20); // optional, change time between updates. Defaults to 10ms
+    keypad.setDebounceCount(3); // optional. Increase if experiencing weird behavior. Defaults to 1
     //keypad.setDebugMode(true); // turns on debugging, off by default, needs to be off when communicated with Unity
 }
 
 void loop(){
     keypad.update(); // call every loop
-    if(keypad.checkIfUpdated()){
+    if(keypad.isUpdated()){
         Serial.println(keypad.read()); // keypad.read() will always return the current state, returns values "normally"
                                        // it will also reset the "updated" flag
                                        // in binary, will return "1" as 00000001, "2" as 00000010, 3 as 00000011, etc.

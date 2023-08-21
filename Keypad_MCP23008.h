@@ -1,4 +1,4 @@
-#include <Adafruit_MCP23X08.h>
+#include "Adafruit_MCP23X08.h"
 
 class Keypad_MCP23008{
     public:
@@ -20,7 +20,7 @@ class Keypad_MCP23008{
         TwoWire* wire;
         Adafruit_MCP23X08* mcp;
         uint8_t readDelay = 10;
-        uint8_t debounceTime = 1;
+        uint8_t debounceCount = 1;
         uint32_t timer;
         uint8_t GPIO_State = 0;
         bool resetNeeded = false;
@@ -55,18 +55,18 @@ class Keypad_MCP23008{
             Serial.println(readDelay);
         }
 
-        void setDebounceTime(uint8_t d){
-            debounceTime = d;
+        void setDebounceCount(uint8_t d){
+            debounceCount = d;
             if(!debug) return;
             Serial.print("debounce time -- ");
-            Serial.println(debounceTime);
+            Serial.println(debounceCount);
         }
 
         void update(){
             if(millis() - timer < readDelay){
                 return;
             }
-            updateDebouncedOutputState(outputState);
+            updateDebouncedOutputState();
             timer = millis();
             if(resetNeeded){
                 if(!keypadReset()){
@@ -94,9 +94,11 @@ class Keypad_MCP23008{
             }
             if(prevState != newState){
                 unsigned int newBits = ~prevState & newState;
+                
                 int numNewBits = numBits(newBits);
                 if(numNewBits == 1){
                     outputState = newBits;
+                    
                 }
                 else if(numNewBits == 0){
                     outputState = 0;
@@ -157,7 +159,7 @@ class Keypad_MCP23008{
             return wire->endTransmission() == 0;
         }
 
-        bool checkIfUpdated(){
+        bool isUpdated(){
             return updated;
         }
 
@@ -182,7 +184,6 @@ class Keypad_MCP23008{
             }
             return val;
         }
-
         bool keypadReset(){
             if(isConnected()){ // why? possible endless loop?
                 // return false;
@@ -236,29 +237,28 @@ class Keypad_MCP23008{
             return _newState;
         }
 
-        void updateDebouncedOutputState(int val){
+        void updateDebouncedOutputState(){
             static int prevVal = 0;
             static int debounceCounter = 0;
-            if(val == debouncedBooleanOutputState){
+            if(outputState == debouncedBooleanOutputState){
                 debounceCounter = 0;
                 return;
             }
-            if(prevVal != val){
+            if(prevVal != outputState){
                 debounceCounter = 0;
-                prevVal = val;
+                prevVal = outputState;
             }
-            else if(++debounceCounter > (val != 0 ? debounceTime : debounceTime * 3)){
-                debouncedBooleanOutputState = val;
+            else if(++debounceCounter > (outputState != 0 ? debounceCount : debounceCount * 3)){
+                debouncedBooleanOutputState = outputState;
+                updated = true;
                 if(debouncedBooleanOutputState == errorVal){
                     debouncedOutputState = 255;
-                    updated = true;
                     return;
                 }
                 debouncedOutputState = 0;
                 for(int i = 0; i < numRows * numCols; i++){
                     if(bitRead(debouncedBooleanOutputState, i)){
                         debouncedOutputState = i + 1;
-                        updated = true;
                         break;
                     }
                 }
