@@ -1,3 +1,6 @@
+#ifndef KEYPAD_MCP23008_H
+#define KEYPAD_MCP23008_H
+
 #include "Adafruit_MCP23X08.h"
 
 class Keypad_MCP23008{
@@ -265,3 +268,5 @@ class Keypad_MCP23008{
             }
         }
 };
+
+#endif
