@@ -27,8 +27,7 @@ void setup(){
 }
 
 void loop(){
-    keypad.update(); // call every loop
-    if(keypad.isUpdated()){
+    if(keypad.update()){
         Serial.println(keypad.read()); // keypad.read() will always return the current state, returns values "normally"
                                        // it will also reset the "updated" flag
                                        // in binary, will return "1" as 00000001, "2" as 00000010, 3 as 00000011, etc.

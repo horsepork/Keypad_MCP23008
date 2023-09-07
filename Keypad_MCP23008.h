@@ -65,15 +65,15 @@ class Keypad_MCP23008{
             Serial.println(debounceCount);
         }
 
-        void update(){
+        bool update(){
             if(millis() - timer < readDelay){
-                return;
+                return updated;
             }
             updateDebouncedOutputState();
             timer = millis();
             if(resetNeeded){
                 if(!keypadReset()){
-                    return;
+                    return updated;
                 }
             }
             unsigned int newState = getNewState();
@@ -81,14 +81,14 @@ class Keypad_MCP23008{
             if(newState == 0){
                 outputState = 0;
                 prevState = 0;
-                return;
+                return updated;
             }
             for(int i = 0; i < numRows * numCols; i++){
                 if(bitRead(newState, i)){
                     if(++continuousBits > numCols){
                         resetNeeded = true;
                         outputState = errorVal;
-                        return;
+                        return updated;
                     }
                 }
                 else{
@@ -108,6 +108,7 @@ class Keypad_MCP23008{
                 }
                 prevState = newState;
             }
+            return updated;
         }
 
         uint8_t read(bool print = false){
@@ -160,10 +161,6 @@ class Keypad_MCP23008{
         bool isConnected() {
             wire->beginTransmission(address);
             return wire->endTransmission() == 0;
-        }
-
-        bool isUpdated(){
-            return updated;
         }
 
 
