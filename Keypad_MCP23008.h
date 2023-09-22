@@ -96,7 +96,6 @@ class Keypad_MCP23008{
                 }
             }
             if(prevState != newState){
-                Serial.println(newState, BIN);
                 unsigned int newBits = ~prevState & newState;
                 
                 int numNewBits = numBits(newBits);
@@ -228,10 +227,6 @@ class Keypad_MCP23008{
             for(int c = 0; c < numCols; c++){
                 switchCol(c);
                 GPIO_State = mcp->readGPIO();
-                // Serial.print("col ");
-                // Serial.print(c);
-                // Serial.print(" state -- ");
-                // Serial.println(GPIO_State, BIN);
                 for(int r = 0; r < numRows; r++){
                     if(!bitRead(GPIO_State, rowPins[r])){
                         uint8_t button = c + 1 + numCols * r;
@@ -239,8 +234,6 @@ class Keypad_MCP23008{
                     }
                 }
             }
-            Serial.println(_newState);
-            delay(250);
             return _newState;
         }
 
