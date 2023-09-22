@@ -231,7 +231,7 @@ class Keypad_MCP23008{
                 Serial.print("col ");
                 Serial.print(c);
                 Serial.print(" state -- ");
-                Serial.println(GPIO_State);
+                Serial.println(GPIO_State, BIN);
                 for(int r = 0; r < numRows; r++){
                     if(!bitRead(GPIO_State, rowPins[r])){
                         uint8_t button = c + 1 + numCols * r;
