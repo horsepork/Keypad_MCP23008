@@ -96,6 +96,7 @@ class Keypad_MCP23008{
                 }
             }
             if(prevState != newState){
+                Serial.println(newState, BIN);
                 unsigned int newBits = ~prevState & newState;
                 
                 int numNewBits = numBits(newBits);
@@ -198,7 +199,7 @@ class Keypad_MCP23008{
             }
             resetNeeded = false;
             if(debug){
-                Serial.print("Keypad successfully reset");
+                Serial.println("Keypad successfully reset");
             }
             return true;
         }
