@@ -41,11 +41,11 @@ class Keypad_MCP23008{
             // wire->setClock(400000);
             mcp->begin_I2C(address, wire);
             for(int i = 0; i < numRows; i++){
-                mcp->pinMode(i, INPUT_PULLUP);
+                mcp->pinMode(rowPins[i], INPUT_PULLUP);
             }
-            for(int i = numRows; i < numRows + numCols; i++){
-                mcp->pinMode(i, OUTPUT);
-                mcp->digitalWrite(i, HIGH);
+            for(int i = 0; i < numCols; i++){
+                mcp->pinMode(colPins[i], OUTPUT);
+                mcp->digitalWrite(colPins[i], HIGH);
             }
             GPIO_State = mcp->readGPIO();
             timer = millis();
@@ -190,12 +190,12 @@ class Keypad_MCP23008{
                 // return false;
             }
             writeReg(0x06, 0xFF);
-            for(int i = 0; i < numCols; i++){
-                mcp->pinMode(i, INPUT_PULLUP);
+            for(int i = 0; i < numRows; i++){
+                mcp->pinMode(rowPins[i], INPUT_PULLUP);
             }
-            for(int i = numRows; i < numRows + numCols; i++){
-                mcp->pinMode(i, OUTPUT);
-                mcp->digitalWrite(i, HIGH);
+            for(int i = 0; i < numCols; i++){
+                mcp->pinMode(colPins[i], OUTPUT);
+                mcp->digitalWrite(colPins[i], HIGH);
             }
             resetNeeded = false;
             if(debug){
@@ -228,10 +228,10 @@ class Keypad_MCP23008{
             for(int c = 0; c < numCols; c++){
                 switchCol(c);
                 GPIO_State = mcp->readGPIO();
-                Serial.print("col ");
-                Serial.print(c);
-                Serial.print(" state -- ");
-                Serial.println(GPIO_State, BIN);
+                // Serial.print("col ");
+                // Serial.print(c);
+                // Serial.print(" state -- ");
+                // Serial.println(GPIO_State, BIN);
                 for(int r = 0; r < numRows; r++){
                     if(!bitRead(GPIO_State, rowPins[r])){
                         uint8_t button = c + 1 + numCols * r;
@@ -239,7 +239,7 @@ class Keypad_MCP23008{
                     }
                 }
             }
-            Serial.println();
+            Serial.println(_newState);
             delay(250);
             return _newState;
         }
