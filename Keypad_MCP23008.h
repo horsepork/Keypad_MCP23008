@@ -38,7 +38,7 @@ class Keypad_MCP23008{
     
     public:
         void begin(){
-            wire->setClock(400000);
+            // wire->setClock(400000);
             mcp->begin_I2C(address, wire);
             for(int i = 0; i < numRows; i++){
                 mcp->pinMode(i, INPUT_PULLUP);
