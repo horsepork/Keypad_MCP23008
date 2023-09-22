@@ -232,7 +232,6 @@ class Keypad_MCP23008{
                 Serial.print(c);
                 Serial.print(" state -- ");
                 Serial.println(GPIO_State);
-                Serial.println();
                 for(int r = 0; r < numRows; r++){
                     if(!bitRead(GPIO_State, rowPins[r])){
                         uint8_t button = c + 1 + numCols * r;
@@ -240,6 +239,8 @@ class Keypad_MCP23008{
                     }
                 }
             }
+            Serial.println();
+            delay(250);
             return _newState;
         }
 
